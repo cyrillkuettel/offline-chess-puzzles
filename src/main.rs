@@ -293,6 +293,11 @@ impl OfflinePuzzles {
             let is_mate = self.board.legal(move_made) && self.board.make_move_new(move_made).status() == BoardStatus::Checkmate;
 
             let correct_moves : Vec<&str> = self.puzzle_tab.puzzles[self.puzzle_tab.current_puzzle].moves.split_whitespace().collect::<Vec<&str>>();
+
+            println!("Current puzzle ID: {}", self.puzzle_tab.puzzles[self.puzzle_tab.current_puzzle].puzzle_id);
+            println!("Current puzzle FEN: {}", self.puzzle_tab.current_puzzle_fen);
+            println!("moves: {}", self.puzzle_tab.puzzles[self.puzzle_tab.current_puzzle].moves);
+            println!("current move: {}", &correct_moves[self.puzzle_tab.current_puzzle_move]);
             let correct_move = ChessMove::new(
                 Square::from_str(&String::from(&correct_moves[self.puzzle_tab.current_puzzle_move][..2])).unwrap(),
                 Square::from_str(&String::from(&correct_moves[self.puzzle_tab.current_puzzle_move][2..4])).unwrap(), PuzzleTab::check_promotion(correct_moves[self.puzzle_tab.current_puzzle_move]));
