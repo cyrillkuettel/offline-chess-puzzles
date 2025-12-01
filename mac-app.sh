@@ -15,7 +15,15 @@ MACOS_DIR=$APP_BUNDLE/Contents/MacOS
 RESOURCES_DIR=$APP_BUNDLE/Contents/Resources
 PLIST_PATH=$APP_BUNDLE/Contents/Info.plist
 
-# 0. Generate .icns from PNG
+# 0. Build the app with macbundle configuration
+echo "Building app with macbundle configuration..."
+RUSTFLAGS="--cfg macbundle" cargo build --release
+if [ $? -ne 0 ]; then
+    echo "❌ Build failed"
+    exit 1
+fi
+
+# 1. Generate .icns from PNG
 mkdir -p "$ICONSET_DIR"
 sips -z 16 16     "$ICON_IMAGE" --out "$ICONSET_DIR/icon_16x16.png"
 sips -z 32 32     "$ICON_IMAGE" --out "$ICONSET_DIR/icon_16x16@2x.png"
@@ -29,7 +37,7 @@ sips -z 512 512   "$ICON_IMAGE" --out "$ICONSET_DIR/icon_512x512.png"
 cp "$ICON_IMAGE" "$ICONSET_DIR/icon_512x512@2x.png"
 iconutil -c icns "$ICONSET_DIR" -o "$ICNS_PATH"
 
-# 1. Create app bundle structure
+# 2. Create app bundle structure
 mkdir -p $ZIP_PATH
 mkdir -p "$MACOS_DIR"
 mkdir -p "$RESOURCES_DIR"
@@ -41,23 +49,29 @@ cp .env "$ZIP_PATH/"
 cp ocp.db "$ZIP_PATH/"
 cp *.ogg "$RESOURCES_DIR/"
 cp settings.json "$ZIP_PATH/"
+# Fix the puzzle_db_location path in settings.json for macbundle
+sed -i '' 's|"puzzle_db_location": "puzzles/|"puzzle_db_location": "../../../puzzles/|g' "$ZIP_PATH/settings.json"
 cp LICENSE "$ZIP_PATH/"
 cp README.md "$ZIP_PATH/"
-cp $EXECUTABLE_PATH "$MACOS_DIR/"
+cp $EXECUTABLE_PATH "$MACOS_DIR/offline-chess-puzzles-bin"
 
-# 2. Copy the icon
+# 3. Copy the icon
 cp "$ICNS_PATH" "$RESOURCES_DIR"
 
-# 3. Create launcher script inside the app bundle
-#cat > "$MACOS_DIR/$APP_NAME" <<EOF
+# 4. Create launcher script that sets working directory to MacOS
+cat > "$MACOS_DIR/offline-chess-puzzles" <<'EOF'
 #!/bin/bash
-#cd "$PROJECT_DIR"
-#exec "$EXECUTABLE_PATH"
-#EOF
+# Get the directory containing this script (MacOS directory)
+MACOS_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+# Change to MacOS directory (where all relative paths in the app expect to be)
+cd "$MACOS_DIR"
+# Run the binary
+exec "$MACOS_DIR/offline-chess-puzzles-bin"
+EOF
 
-#chmod +x "$MACOS_DIR/$APP_NAME"
+chmod +x "$MACOS_DIR/offline-chess-puzzles"
 
-# 4. Create Info.plist
+# 5. Create Info.plist
 cat > "$PLIST_PATH" <<EOF
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
@@ -65,22 +79,36 @@ cat > "$PLIST_PATH" <<EOF
 <plist version="1.0">
 <dict>
   <key>CFBundleExecutable</key>
-  <string>$APP_NAME</string>
+  <string>offline-chess-puzzles</string>
   <key>CFBundleIdentifier</key>
   <string>brianch.offlinechesspuzzles</string>
   <key>CFBundleName</key>
   <string>Offline Chess Puzzles</string>
+  <key>CFBundleDisplayName</key>
+  <string>Offline Chess Puzzles</string>
   <key>CFBundleVersion</key>
+  <string>1.0</string>
+  <key>CFBundleShortVersionString</key>
   <string>1.0</string>
   <key>CFBundlePackageType</key>
   <string>APPL</string>
   <key>CFBundleIconFile</key>
   <string>$ICNS_FILE_NAME</string>
+  <key>CFBundleInfoDictionaryVersion</key>
+  <string>6.0</string>
+  <key>LSMinimumSystemVersion</key>
+  <string>10.13</string>
+  <key>NSHighResolutionCapable</key>
+  <true/>
+  <key>LSApplicationCategoryType</key>
+  <string>public.app-category.games</string>
+  <key>NSHumanReadableCopyright</key>
+  <string>Copyright © 2024</string>
 </dict>
 </plist>
 EOF
 
-# 5. Refresh the app bundle so Spotlight recognizes it
+# 6. Refresh the app bundle so Spotlight recognizes it
 touch "$APP_BUNDLE"
 tree
 

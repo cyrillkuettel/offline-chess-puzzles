@@ -32,7 +32,7 @@ use rand::thread_rng;
 use rand::seq::SliceRandom;
 
 mod config;
-use config::{ONE_PIECE_SOUND_FILE, TWO_PIECES_SOUND_FILE};
+use config::{ONE_PIECE_SOUND_FILE, TWO_PIECES_SOUND_FILE, PIECES_DIRECTORY};
 
 mod styles;
 mod search_tab;
@@ -172,19 +172,19 @@ fn get_image_handles(theme: &PieceTheme) -> Vec<Handle> {
     let mut handles = Vec::<Handle>::with_capacity(12);
     let theme_str = &theme.to_string();
 
-    handles.insert(PieceWithColor::WhitePawn.index(), Handle::from_path(String::from("pieces/") + &theme_str + "/wP.svg"));
-    handles.insert(PieceWithColor::WhiteRook.index(), Handle::from_path(String::from("pieces/") + &theme_str + "/wR.svg"));
-    handles.insert(PieceWithColor::WhiteKnight.index(), Handle::from_path(String::from("pieces/") + &theme_str + "/wN.svg"));
-    handles.insert(PieceWithColor::WhiteBishop.index(), Handle::from_path(String::from("pieces/") + &theme_str + "/wB.svg"));
-    handles.insert(PieceWithColor::WhiteQueen.index(), Handle::from_path(String::from("pieces/") + &theme_str + "/wQ.svg"));
-    handles.insert(PieceWithColor::WhiteKing.index(), Handle::from_path(String::from("pieces/") + &theme_str + "/wK.svg"));
+    handles.insert(PieceWithColor::WhitePawn.index(), Handle::from_path(String::from(PIECES_DIRECTORY) + &theme_str + "/wP.svg"));
+    handles.insert(PieceWithColor::WhiteRook.index(), Handle::from_path(String::from(PIECES_DIRECTORY) + &theme_str + "/wR.svg"));
+    handles.insert(PieceWithColor::WhiteKnight.index(), Handle::from_path(String::from(PIECES_DIRECTORY) + &theme_str + "/wN.svg"));
+    handles.insert(PieceWithColor::WhiteBishop.index(), Handle::from_path(String::from(PIECES_DIRECTORY) + &theme_str + "/wB.svg"));
+    handles.insert(PieceWithColor::WhiteQueen.index(), Handle::from_path(String::from(PIECES_DIRECTORY) + &theme_str + "/wQ.svg"));
+    handles.insert(PieceWithColor::WhiteKing.index(), Handle::from_path(String::from(PIECES_DIRECTORY) + &theme_str + "/wK.svg"));
 
-    handles.insert(PieceWithColor::BlackPawn.index(), Handle::from_path(String::from("pieces/") + &theme_str + "/bP.svg"));
-    handles.insert(PieceWithColor::BlackRook.index(), Handle::from_path(String::from("pieces/") + &theme_str + "/bR.svg"));
-    handles.insert(PieceWithColor::BlackKnight.index(), Handle::from_path(String::from("pieces/") + &theme_str + "/bN.svg"));
-    handles.insert(PieceWithColor::BlackBishop.index(), Handle::from_path(String::from("pieces/") + &theme_str + "/bB.svg"));
-    handles.insert(PieceWithColor::BlackQueen.index(), Handle::from_path(String::from("pieces/") + &theme_str + "/bQ.svg"));
-    handles.insert(PieceWithColor::BlackKing.index(), Handle::from_path(String::from("pieces/") + &theme_str + "/bK.svg"));
+    handles.insert(PieceWithColor::BlackPawn.index(), Handle::from_path(String::from(PIECES_DIRECTORY) + &theme_str + "/bP.svg"));
+    handles.insert(PieceWithColor::BlackRook.index(), Handle::from_path(String::from(PIECES_DIRECTORY) + &theme_str + "/bR.svg"));
+    handles.insert(PieceWithColor::BlackKnight.index(), Handle::from_path(String::from(PIECES_DIRECTORY) + &theme_str + "/bN.svg"));
+    handles.insert(PieceWithColor::BlackBishop.index(), Handle::from_path(String::from(PIECES_DIRECTORY) + &theme_str + "/bB.svg"));
+    handles.insert(PieceWithColor::BlackQueen.index(), Handle::from_path(String::from(PIECES_DIRECTORY) + &theme_str + "/bQ.svg"));
+    handles.insert(PieceWithColor::BlackKing.index(), Handle::from_path(String::from(PIECES_DIRECTORY) + &theme_str + "/bK.svg"));
 
     handles
 }
